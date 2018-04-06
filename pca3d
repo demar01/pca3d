@@ -1,0 +1,26 @@
+pca3d <- function(data, x = 1, z = 3) {
+
+    pca <- prcomp(na.omit(data))
+    values <- pca$rotation
+    colours <- rainbow(dim(values)[1])
+    
+    rgl::plot3d(values[, x:z]
+                ,type = "s"
+                ,size = 1
+                ,col = colours
+    )
+    rgl::text3d(values[, x:z]
+                ,texts = rownames(values)
+                ,adj = c(1, 1)
+                ,cex = 0.5
+    )
+    return(data.frame(values))
+}
+
+ 
+    data=read.csv("b1625p094_phos_PCA.csv")
+firstsample=2
+lastsample=45
+
+
+pca3d(data[,firstsample:lastsample]) 
