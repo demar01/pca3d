@@ -1,0 +1,46 @@
+library(readxl)
+#a)Quantification of total area under the chromatographic peaks contained in proteomics MS runs
+Sheetnumber=1
+myFile =   "outputareasforQC_A.xlsx"  
+shA= read_excel(myFile,Sheetnumber)
+barplot(shA[,2], col=c("grey"), ylim=c(0,20000000000000), ylab="Total chromatogram area")
+mMS=median(shA[,2])
+abline(h=mMS,lty=2,col="blue")
+
+
+#b) Number of MS and MS2 scans quantified by RawMeat
+myFile =   "RAWmeat.xlsx"  
+shA= read_excel(myFile, "Sheet1")
+counts <-cbind(shA[,2], shA[,3])
+nombres= gsub("b1369p601_","",shA[,1])
+nombres= gsub("parental","P",shA[,1])
+barplot(t(counts),  names.arg =nombres, col=c("darkblue","red"), ylim=c(0,14000),
+        legend = colnames(shA)[2:3], beside=TRUE, las=3,
+        args.legend = list(x ='topright', bty='n',  inset=c(0.10,-0.10)), ylab="Scans")
+mMS=median(shA[,2])
+mMS2=median(shA[,3])
+abline(h=mMS,lty=2,col="blue")
+abline(h=mMS2,lty=2,col="red")
+
+
+#c) Histogram distribution of the correlation between the alignment of retention times of all experimental samples
+myFile =   "calculatedRT3.xlsx"  
+a= read_excel(myFile, "Sheet1")
+m<-mean(cor(a[,2:17])[lower.tri(cor(a[,2:17]))])
+std<-sqrt(var(cor(a[,2:17])[lower.tri(cor(a[,2:17]))]))
+hist(cor(a[,2:17])[lower.tri(cor(a[,2:17]))], xlab="tR aligment Pearson's r",main ="",col="slateblue1")
+abline(v=m,lty=2,col="blue")
+
+#d) Box plots demonstrating the distribution of log2-transformed peptide peak intensities pre-normalisation.
+myFile =   "output_areas_proteins.xlsx"  
+df= read_excel(myFile, "Sheet1")
+boxplot(log2(df),las=3,xlab="sample",ylab="log2 area intensity")
+
+
+#e) log2 distribution of peptides peak intensities post-quantile normalisation.
+library(preprocessCore)
+boxplot(normalize.quantiles(as.matrix(log2(df))),las=3,xlab="sample",ylab="log2 area intensity", names= names(df),cex.axis=0.5)
+)
+
+
+
